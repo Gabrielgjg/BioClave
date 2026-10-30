@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BioClave | Biología 1°</title>
+<style>
+:root{--bg:#f3f7f5;--ink:#17352c;--muted:#61766d;--green:#16845b;--blue:#2876b9;--red:#c84e4e;--gold:#c58a25;--card:#fff;--line:#dce7e1;--shadow:0 10px 28px rgba(24,62,47,.09)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:linear-gradient(115deg,#123e32,#17694d);color:#fff;padding:20px clamp(16px,4vw,42px);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{font-weight:900;letter-spacing:.08em;font-size:clamp(22px,3vw,32px)}.brand span{color:#a9e2c2}.sub{opacity:.85;font-size:13px;margin-top:3px}
+.header-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{border:1px solid #ffffff50;border-radius:99px;padding:7px 12px;font-size:12px;font-weight:700}
+main{max-width:1250px;margin:22px auto;padding:0 18px 40px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+button,select,input,textarea{font:inherit}button{border:0;border-radius:10px;padding:10px 14px;font-weight:750;cursor:pointer;transition:.15s}
+button:hover{transform:translateY(-1px);filter:brightness(.98)}button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.primary{background:var(--green);color:#fff}.secondary{background:#e4eee8;color:var(--ink)}.dark{background:#17352c;color:#fff}.warning{background:#fff0d4;color:#81530a}.danger{background:#fbe7e5;color:#9c3434}.outline{background:#fff;border:1px solid var(--line);color:var(--ink)}
+select,input,textarea{border:1px solid var(--line);border-radius:9px;padding:10px;background:#fff;color:var(--ink)}
+textarea{width:100%;min-height:150px;resize:vertical}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:18px;align-items:start}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:18px}
+.panel h2{font-size:17px;margin:0 0 5px}.muted{color:var(--muted);font-size:13px}
+.status{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px}
+.turn{display:flex;align-items:center;gap:9px;font-weight:850;font-size:18px}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block}.dot.green{background:var(--green)}.dot.blue{background:var(--blue)}
+.scorebar{display:flex;gap:8px;flex-wrap:wrap}.score{padding:7px 11px;border-radius:9px;background:#f1f6f3;font-weight:800;font-size:13px}.score small{font-weight:700;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+.word{position:relative;min-height:78px;padding:9px 5px;background:#fff;border:2px solid #d8e4dd;border-radius:11px;color:#27463a;font-weight:850;font-size:clamp(10px,1.15vw,14px);letter-spacing:.02em;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow-wrap:anywhere;hyphens:auto}
+.word:not(:disabled):hover{border-color:#76ae91;background:#f4faf6}
+.word.revealed{color:#fff;border-color:transparent}.word.revealed.green{background:var(--green)}.word.revealed.blue{background:var(--blue)}.word.revealed.neutral{background:#89958f}.word.revealed.assassin{background:var(--red)}
+.word .tag{display:block;margin-top:4px;font-size:9px;font-weight:800;letter-spacing:.08em;opacity:.9}
+.word:disabled{cursor:default;opacity:1}
+.side{display:grid;gap:14px}.timer{font-size:36px;font-weight:900;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.timer.low{color:var(--red)}.side-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.clue-row{display:grid;grid-template-columns:1fr 74px;gap:8px}
+.notice{padding:11px 12px;background:#eff7f2;border-radius:10px;font-size:13px;line-height:1.45;margin-top:12px}
+.justify{margin-top:10px;padding:12px;border-radius:10px;background:#fff8e8;border:1px solid #f1dfb5;font-size:13px}
+.justify .two{margin-top:8px}
+.log{max-height:190px;overflow:auto;font-size:12px;color:var(--muted);line-height:1.55}.log div{padding:5px 0;border-bottom:1px solid #edf2ef}
+.modal{position:fixed;inset:0;background:#10271fbd;display:none;align-items:center;justify-content:center;padding:16px;z-index:5}.modal.show{display:flex}.modalbox{width:min(640px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:18px;padding:22px;box-shadow:0 20px 60px #0004}
+.keygrid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:14px 0}.keycell{border-radius:7px;padding:8px 3px;text-align:center;font-size:10px;font-weight:850;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow-wrap:anywhere}.keycell small{font-size:8px;margin-top:2px;opacity:.8}
+.k-green{background:#d8f0e2;color:#17633e}.k-blue{background:#dcecf9;color:#205c8b}.k-neutral{background:#e9eeeb;color:#58645e}.k-assassin{background:#f8dddd;color:#a52d2d;outline:2px solid #c84e4e}
+.codebox{font-size:30px;font-weight:900;letter-spacing:.12em;background:#17352c;color:#fff;border-radius:12px;padding:10px 16px;display:inline-block;font-variant-numeric:tabular-nums}
+.field{display:grid;gap:6px;margin:12px 0}.field label{font-size:12px;font-weight:800;color:var(--muted)}
+.hidden{display:none!important}.footer{text-align:center;color:#82948b;font-size:11px;margin-top:18px}
+/* Configuración */
+.setup-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin:14px 0}
+.topic{text-align:left;background:#fff;border:2px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:6px;color:var(--ink);font-weight:600}
+.topic b{font-size:15px}.topic .muted{font-size:12px;font-weight:500}
+.topic.sel{border-color:var(--green);background:#eef8f2;box-shadow:0 0 0 3px #16845b22}
+.topic .chk{font-size:11px;font-weight:800;color:var(--green);letter-spacing:.06em}
+.topic.custom{border-style:dashed}
+.setup-foot{display:flex;gap:12px;flex-wrap:wrap;align-items:end;justify-content:space-between;margin-top:6px}
+.setup-foot .field{margin:0}
+.hint{font-size:12px;color:var(--muted);margin-top:8px}
+.rules{font-size:14px;line-height:1.55;color:var(--ink)}.rules h3{font-size:14px;margin:16px 0 6px;color:var(--green);text-transform:uppercase;letter-spacing:.06em}.rules ol,.rules ul{margin:0;padding-left:22px}.rules li{margin:3px 0}
+.rules-legend{display:flex;flex-wrap:wrap;gap:6px}.rules-legend span{padding:6px 10px;border-radius:8px;font-size:12px;font-weight:800}
+.cap-tips{margin-top:12px;font-size:13px;line-height:1.5;background:#fff8e8;border:1px solid #f1dfb5;border-radius:10px;padding:10px 12px}.cap-tips ul{margin:4px 0 0;padding-left:20px}
+@media print{body{background:#fff}header,main,.modal:not(#rulesModal),.no-print{display:none!important}#rulesModal{display:block!important;position:static;background:#fff;padding:0}#rulesModal .modalbox{box-shadow:none;max-height:none;width:100%;padding:0}.rules{font-size:12.5px}.rules-legend span{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.side{grid-template-columns:repeat(2,minmax(0,1fr))}.side .panel:last-child{grid-column:1/-1}}
+@media(max-width:520px){main{padding:0 10px 28px}.panel{padding:13px}.grid{gap:5px}.word{min-height:66px;padding:5px 2px;font-size:9.5px;border-radius:8px}.word .tag{font-size:7px}.side{grid-template-columns:1fr}.header-right{width:100%}.codebox{font-size:22px}}
+</style>
+</head>
+<body>
+<header>
+ <div><div class="brand">BIO<span>·</span>CLAVE</div><div class="sub" id="subtitle">Biología 1° · Secundaria · Trimestre 1</div></div>
+ <div class="header-right" id="headerPills"><span class="pill">25 conceptos</span><span class="pill">2 equipos</span></div>
+</header>
+
+<main>
+ <!-- ============ CONFIGURACIÓN ============ -->
+ <section id="setupScreen">
+  <div class="panel">
+   <h2>1. Elige el tema</h2>
+   <div class="muted">Selecciona uno para una partida temática, o varios para un repaso mixto. Cada partida toma 25 conceptos al azar del banco.</div>
+   <div class="setup-grid" id="topicGrid"></div>
+   <div class="setup-foot">
+    <div class="field"><label for="duration">2. Duración</label>
+     <select id="duration"><option value="15">15 minutos</option><option value="20">20 minutos</option><option value="30" selected>30 minutos</option><option value="45">45 minutos</option></select>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+     <button class="outline" id="rulesBtn2">Cómo se juega</button>
+     <button class="outline" id="toCaptain">Soy capitán: ver clave en mi celular</button>
+     <button class="primary" id="createGame">Crear partida</button>
+    </div>
+   </div>
+   <div class="hint" id="selInfo">Ningún tema seleccionado.</div>
+  </div>
+ </section>
+
+ <!-- ============ MODO CAPITÁN ============ -->
+ <section id="captainScreen" class="hidden">
+  <div class="panel" style="max-width:640px;margin:0 auto">
+   <h2>Modo capitán</h2>
+   <div class="muted">Escribe el código de partida que te dio tu docente. No muestres esta pantalla a tu equipo.</div>
+   <div class="field"><label for="capCode">Código de partida</label><input id="capCode" placeholder="Ej. C-4821" autocomplete="off" style="text-transform:uppercase;font-size:20px;letter-spacing:.1em"></div>
+   <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="primary" id="capShow">Ver clave</button><button class="outline" id="capBack">Volver</button></div>
+   <div id="capResult" class="hidden">
+    <div class="notice" id="capInfo"></div>
+    <div class="keygrid" id="capGrid"></div>
+    <div class="muted" id="capCounts"></div>
+    <div class="cap-tips"><b>Recordatorio para capitanes</b><ul>
+     <li>Pista = UNA palabra + un número. No puede estar en el tablero.</li>
+     <li>Revisa que tu pista no lleve a la tarjeta ☠.</li>
+     <li>No hagas gestos ni reacciones mientras tu equipo decide.</li>
+    </ul></div>
+   </div>
+   <div class="notice hidden" id="capError"></div>
+  </div>
+ </section>
+
+ <!-- ============ JUEGO ============ -->
+ <section id="gameScreen" class="hidden">
+  <div class="toolbar">
+   <button class="secondary" id="keyBtn">Ver clave docente</button>
+   <button class="outline" id="rulesBtn">Reglas rápidas</button>
+   <button class="outline" id="resetBtn">Reiniciar (misma clave)</button>
+   <button class="outline" id="newSame">Nuevo tablero (mismo tema)</button>
+   <button class="outline" id="toSetup">Cambiar tema</button>
+  </div>
+  <div class="layout">
+   <section class="panel">
+    <div class="status">
+     <div><div class="turn"><span class="dot green" id="turnDot"></span><span id="turnName">Turno: Equipo Verde</span></div><div class="muted" id="turnHint"></div></div>
+     <div class="scorebar">
+      <div class="score">Verde: <span id="greenScore">0</span>/9 <small>· ★ <span id="greenComp">0</span></small></div>
+      <div class="score">Azul: <span id="blueScore">0</span>/8 <small>· ★ <span id="blueComp">0</span></small></div>
+     </div>
+    </div>
+    <div class="grid" id="board" aria-label="Tablero de conceptos"></div>
+    <div class="notice" id="message" aria-live="polite"></div>
+    <div class="justify hidden" id="justifyBox">
+     <div id="justifyText"></div>
+     <div class="two"><button class="primary" id="justOk">✓ Correcta (+1 ★)</button><button class="danger" id="justNo">✗ No convence</button></div>
+    </div>
+   </section>
+   <aside class="side">
+    <section class="panel">
+     <h2>Tiempo de partida</h2><div class="timer" id="timer">30:00</div>
+     <div class="side-row"><span class="muted">Cronómetro</span><span id="timerState" class="muted">Detenido</span></div>
+     <div class="two"><button class="primary" id="startTimer">Iniciar</button><button class="secondary" id="pauseTimer">Pausar</button></div>
+    </section>
+    <section class="panel">
+     <h2>Pista del capitán</h2><div class="muted">Una palabra y un número. Al registrarla, el equipo tiene número + 1 intentos.</div>
+     <div class="field"><div class="clue-row"><input id="clueWord" placeholder="Ej. ENERGÍA" aria-label="Palabra de la pista"><select id="clueNum" aria-label="Número de la pista"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></div></div>
+     <div class="two" style="margin-top:0"><button class="secondary" id="clueBtn">Registrar pista</button><button class="dark" id="endTurn">Terminar turno</button></div>
+     <div class="side-row"><span class="muted">Intentos restantes</span><strong id="guessLeft">libres</strong></div>
+    </section>
+    <section class="panel">
+     <h2>Registro de la partida</h2><div class="log" id="log"></div>
+    </section>
+   </aside>
+  </div>
+ </section>
+ <div class="footer">BioClave · Weird Games · Funciona sin conexión</div>
+</main>
+
+<!-- Clave docente -->
+<div class="modal" id="keyModal" role="dialog" aria-modal="true" aria-labelledby="keyTitle">
+ <div class="modalbox">
+  <h2 id="keyTitle">Clave secreta del docente</h2>
+  <p class="muted">No proyectes esta ventana. Dicta el código a los capitanes: en su celular abren BioClave → «Soy capitán» y ven esta misma clave.</p>
+  <div class="codebox" id="keyCode"></div>
+  <div class="notice" id="keyInfo"></div>
+  <div class="keygrid" id="keyGrid"></div>
+  <div class="muted" id="keyCounts"></div>
+  <div style="display:flex;justify-content:flex-end;margin-top:16px"><button class="dark" id="closeKey">Cerrar clave</button></div>
+ </div>
+</div>
+
+<!-- Reglas -->
+<div class="modal" id="rulesModal" role="dialog" aria-modal="true" aria-labelledby="rulesTitle">
+ <div class="modalbox">
+  <div class="rules">
+  <h2 id="rulesTitle">BioClave · Cómo se juega</h2>
+  <p class="muted">Juego de asociación por equipos. Los capitanes conocen la clave secreta y guían a su equipo con pistas de una sola palabra.</p>
+  <h3>Preparación</h3>
+  <ol>
+   <li>Formen dos equipos: <b>Verde</b> (9 conceptos, inicia) y <b>Azul</b> (8 conceptos). Cada equipo elige un <b>capitán</b>.</li>
+   <li>El docente elige el tema, crea la partida y proyecta el tablero de 25 conceptos.</li>
+   <li>El docente dicta a los capitanes el <b>código de partida</b> (ej. C-4607). Ellos lo escriben en su celular en «Soy capitán» y ven la clave. <b>Nadie más puede verla.</b></li>
+  </ol>
+  <h3>La clave tiene</h3>
+  <div class="rules-legend"><span class="k-green">9 Verdes</span><span class="k-blue">8 Azules</span><span class="k-neutral">7 Neutrales</span><span class="k-assassin">1 Tarjeta de derrota ☠</span></div>
+  <h3>Cada turno</h3>
+  <ol>
+   <li>El capitán dice <b>una palabra y un número</b>. Ej. «AGUA, 3» = hay 3 conceptos de mi equipo relacionados con agua.</li>
+   <li>El equipo discute y elige los conceptos <b>uno por uno</b>. Tiene <b>número + 1 intentos</b>.</li>
+   <li><b>Concepto propio:</b> punto. Un integrante <b>justifica</b> la relación científica con la pista; si es correcta, gana 1 ★ de comprensión. El equipo puede seguir o plantarse.</li>
+   <li><b>Neutral:</b> termina el turno.</li>
+   <li><b>Del otro equipo:</b> el punto es para ellos y termina el turno.</li>
+   <li><b>Tarjeta de derrota ☠:</b> el equipo pierde de inmediato.</li>
+  </ol>
+  <h3>El capitán NO puede</h3>
+  <ul>
+   <li>Usar una palabra que esté en el tablero, ni partes de ella.</li>
+   <li>Hacer gestos, señalar, dar pistas extra o reaccionar mientras su equipo decide.</li>
+   <li>Usar pistas que no tengan relación con el significado (letras, rimas, posición en el tablero).</li>
+  </ul>
+  <h3>Cómo se gana</h3>
+  <ul>
+   <li>Gana el primer equipo que descubra <b>todos</b> sus conceptos.</li>
+   <li>Si un equipo elige la tarjeta de derrota, gana el otro.</li>
+   <li>Si se acaba el tiempo: gana quien tenga más conceptos; si empatan, quien tenga más ★.</li>
+  </ul>
+  <h3>Consejos</h3>
+  <ul>
+   <li>Pista amplia («AGUA, 3») = más avance, más riesgo. Pista precisa («NÉCTAR, 1») = segura.</li>
+   <li>Antes de dar la pista, el capitán revisa que no lleve a la tarjeta de derrota.</li>
+   <li>Rotamos capitanes en cada partida.</li>
+  </ul>
+  </div>
+  <div class="no-print" style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px"><button class="outline" id="printRules">Imprimir reglas</button><button class="dark" id="closeRules">Entendido</button></div>
+ </div>
+</div>
+
+<!-- Tema personalizado -->
+<div class="modal" id="customModal" role="dialog" aria-modal="true" aria-labelledby="customTitle">
+ <div class="modalbox">
+  <h2 id="customTitle">Tema personalizado</h2>
+  <p class="muted">Escribe al menos 25 conceptos, uno por línea. Se guardan en este navegador. Ojo: el modo capitán en otro celular no puede leer un tema personalizado; para este tema la clave se consulta en esta misma computadora.</p>
+  <div class="field"><label for="customName">Nombre del tema</label><input id="customName" placeholder="Ej. Sistema nervioso"></div>
+  <div class="field"><label for="customWords">Conceptos (uno por línea)</label><textarea id="customWords"></textarea></div>
+  <div class="muted" id="customCount">0 conceptos</div>
+  <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px"><button class="outline" id="customCancel">Cancelar</button><button class="primary" id="customSave">Guardar tema</button></div>
+ </div>
+</div>
+
+<script>
+/* ===================== BANCOS DE CONCEPTOS ===================== */
+const TOPICS={
+ A:{name:"La biología y sus ramas",desc:"Bíos y logos, ramas de la biología, método científico.",lose:"PSEUDOCIENCIA",words:["BIOLOGÍA","BÍOS","LOGOS","ZOOLOGÍA","BOTÁNICA","MICROBIOLOGÍA","ECOLOGÍA","GENÉTICA","ANATOMÍA","FISIOLOGÍA","CITOLOGÍA","HISTOLOGÍA","MICOLOGÍA","ENTOMOLOGÍA","ICTIOLOGÍA","ORNITOLOGÍA","HERPETOLOGÍA","PALEONTOLOGÍA","ETOLOGÍA","TAXONOMÍA","EMBRIOLOGÍA","BIOTECNOLOGÍA","VIROLOGÍA","PARASITOLOGÍA","EVOLUCIÓN","MÉTODO CIENTÍFICO","HIPÓTESIS","OBSERVACIÓN","EXPERIMENTO","MICROSCOPIO","CÉLULA","TEJIDO","ÓRGANO","FÓSIL","HONGO","INSECTO","AVE","PEZ","REPTIL","CONDUCTA","BACTERIA","VIRUS","PLANTA"]},
+ B:{name:"Características de los seres vivos",desc:"Nutrición, reproducción, homeostasis, metabolismo, organización celular.",lose:"MATERIA INERTE",words:["NUTRICIÓN","RESPIRACIÓN","REPRODUCCIÓN","CRECIMIENTO","DESARROLLO","IRRITABILIDAD","ESTÍMULO","RESPUESTA","HOMEOSTASIS","METABOLISMO","ANABOLISMO","CATABOLISMO","ADAPTACIÓN","EVOLUCIÓN","CÉLULA","UNICELULAR","PLURICELULAR","ORGANIZACIÓN","MOVIMIENTO","EXCRECIÓN","ENERGÍA","ALIMENTO","OXÍGENO","SUDOR","TEMPERATURA","HERENCIA","ADN","AUTÓTROFO","HETERÓTROFO","FOTOSÍNTESIS","SEMILLA","HUEVO","ESPORA","CICLO DE VIDA","MUERTE","BACTERIA","LEVADURA","AGUA","GLUCOSA","ORGANELO","TROPISMO","SER VIVO"]},
+ C:{name:"Biodiversidad y ecosistemas",desc:"Especie, población, comunidad, relaciones entre especies, México megadiverso.",lose:"ESPECIE INVASORA",words:["ESPECIE","HÁBITAT","POBLACIÓN","COMUNIDAD","ECOSISTEMA","BIODIVERSIDAD","NICHO ECOLÓGICO","ENDEMISMO","MUTUALISMO","PARASITISMO","COMENSALISMO","DEPREDACIÓN","COMPETENCIA","POLINIZACIÓN","DISPERSIÓN","MIGRACIÓN","ADAPTACIÓN","CONSERVACIÓN","MEGADIVERSO","SELVA","DESIERTO","BOSQUE","MANGLAR","ARRECIFE","HUMEDAL","ÁREA NATURAL PROTEGIDA","AJOLOTE","VAQUITA MARINA","JAGUAR","MARIPOSA MONARCA","CLIMA","SUELO","AGUA","BIOMA","VARIEDAD GENÉTICA","EXTINCIÓN","FRAGMENTACIÓN","DEFORESTACIÓN","CAZA FURTIVA","RESERVA","CORREDOR BIOLÓGICO"]},
+ D:{name:"Redes tróficas",desc:"Productores, consumidores, descomponedores, flujo de energía.",lose:"COLAPSO TRÓFICO",words:["PRODUCTOR","CONSUMIDOR PRIMARIO","CONSUMIDOR SECUNDARIO","CONSUMIDOR TERCIARIO","DESCOMPONEDOR","HERBÍVORO","CARNÍVORO","OMNÍVORO","CARROÑERO","DETRITÍVORO","DEPREDADOR","PRESA","CADENA ALIMENTARIA","RED TRÓFICA","NIVEL TRÓFICO","ENERGÍA","SOL","FOTOSÍNTESIS","PIRÁMIDE","REGLA DEL 10 %","BIOMASA","HONGO","BACTERIA","LOMBRIZ","FITOPLANCTON","ZOOPLANCTON","PASTO","CONEJO","COYOTE","ÁGUILA","ZOPILOTE","NOPAL","SERPIENTE","RANA","SALTAMONTES","MATERIA ORGÁNICA","NUTRIENTES","BIOACUMULACIÓN","ESPECIE CLAVE","SUPERDEPREDADOR"]},
+ E:{name:"Saberes originarios y biodiversidad local",desc:"Milpa, herbolaria, conocimientos de los pueblos y naturaleza de Jalisco.",lose:"DESPOJO",words:["MILPA","MAÍZ","FRIJOL","CALABAZA","CHILE","NOPAL","MAGUEY","AMARANTO","CHÍA","CACAO","HERBOLARIA","TEMAZCAL","CHINAMPA","TEMPORAL","SEMILLA NATIVA","TIANGUIS","TRUEQUE","TEQUIO","COMUNIDAD","ABUELOS","LENGUA MATERNA","NÁHUATL","WIXÁRIKA","CEMPASÚCHIL","COPAL","AHUEHUETE","CENOTE","MANANTIAL","LAGO DE CHAPALA","BOSQUE LA PRIMAVERA","AGAVE AZUL","PITAYA","GUAMÚCHIL","HUIZACHE","QUELITE","POLINIZADOR","CALENDARIO AGRÍCOLA","LUNA","ROTACIÓN DE CULTIVOS","ABONO","GUARDIANES DEL BOSQUE"]},
+ F:{name:"Cambio climático y recursos",desc:"Efecto invernadero, agua, residuos y consumo responsable (feria de ciencias).",lose:"PUNTO DE NO RETORNO",words:["EFECTO INVERNADERO","CALENTAMIENTO GLOBAL","CO₂","METANO","COMBUSTIBLE FÓSIL","DEFORESTACIÓN","SEQUÍA","HURACÁN","DESHIELO","NIVEL DEL MAR","OLA DE CALOR","ATMÓSFERA","HUELLA DE CARBONO","HUELLA HÍDRICA","ACUÍFERO","AGUA POTABLE","CAPTACIÓN PLUVIAL","RECICLAJE","REUTILIZAR","REDUCIR","COMPOSTA","PET","BASURA","RELLENO SANITARIO","ENERGÍA SOLAR","ENERGÍA EÓLICA","TRANSPORTE PÚBLICO","BICICLETA","ÁRBOL","OCÉANO","ARRECIFE","ACIDIFICACIÓN","INCENDIO FORESTAL","CONSUMO RESPONSABLE","FUGA","MICROPLÁSTICO","GANADERÍA","MITIGACIÓN","ADAPTACIÓN","ESCENARIO FUTURO","TEMPERATURA"]},
+ G:{name:"ADN, ARN y proteínas",desc:"Replicación, transcripción y traducción (Código de Vida).",lose:"ERROR LETAL",words:["ADN","ARN","GEN","CROMOSOMA","NÚCLEO","CÉLULA","DOBLE HÉLICE","NUCLEÓTIDO","ADENINA","TIMINA","GUANINA","CITOSINA","URACILO","BASE NITROGENADA","AZÚCAR","FOSFATO","REPLICACIÓN","TRANSCRIPCIÓN","TRADUCCIÓN","CODÓN","ANTICODÓN","RIBOSOMA","AMINOÁCIDO","PROTEÍNA","ENZIMA","HELICASA","POLIMERASA","CÓDIGO GENÉTICO","HERENCIA","MUTACIÓN","RASGO","ARN MENSAJERO","ARN DE TRANSFERENCIA","CITOPLASMA","CADENA MOLDE","COMPLEMENTARIO","PUENTE DE HIDRÓGENO","GENOMA","ÁCIDO NUCLEICO","CROMATINA"]}
+};
+const MIX_LOSE="CAOS";
+const TYPE_LABEL={green:"VERDE",blue:"AZUL",neutral:"NEUTRAL"};
+
+/* ===================== UTILIDADES ===================== */
+const $=id=>document.getElementById(id);
+function hashStr(s){let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19}return()=>{h=Math.imul(h^h>>>16,2246822507);h=Math.imul(h^h>>>13,3266489909);return(h^=h>>>16)>>>0}}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function shuffle(arr,rnd){let b=[...arr];for(let i=b.length-1;i>0;i--){let j=Math.floor(rnd()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+function norm(s){return s.normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase().trim()}
+function teamName(t){return t==="green"?"Verde":"Azul"}
+function getCustom(){try{const c=JSON.parse(localStorage.getItem("bioclave_custom")||"null");if(c&&Array.isArray(c.words)&&c.words.length>=25)return c}catch(e){}return null}
+function setCustom(c){try{localStorage.setItem("bioclave_custom",JSON.stringify(c));return true}catch(e){return false}}
+let customMem=null; // respaldo si el navegador no permite guardar
+function custom(){return getCustom()||customMem}
+
+/* Genera la partida a partir del código (mismo código = misma clave en cualquier dispositivo) */
+function parseCode(code){const m=/^([A-GZ]+)-(\d{4})$/.exec((code||"").toUpperCase().replace(/\s/g,""));if(!m)return null;const letters=[...new Set(m[1].split(""))].sort();return{letters,num:m[2],code:letters.join("")+"-"+m[2]}}
+function buildGame(code){
+ const p=parseCode(code);if(!p)return{error:"Código no válido. Debe verse como C-4821."};
+ let pool=[],names=[];
+ for(const L of p.letters){
+  if(L==="Z"){const c=custom();if(!c)return{error:"Este código usa un tema personalizado que solo existe en la computadora del docente. Pide que te muestre la clave ahí."};pool.push(...c.words);names.push(c.name)}
+  else{pool.push(...TOPICS[L].words);names.push(TOPICS[L].name)}
+ }
+ pool=[...new Map(pool.map(w=>[norm(w),w])).values()];
+ const rnd=mulberry32(hashStr(p.code)());
+ const words=shuffle(pool,rnd).slice(0,25);
+ const types=shuffle([...Array(9).fill("green"),...Array(8).fill("blue"),...Array(7).fill("neutral"),"assassin"],rnd);
+ const lose="DERROTA"; // etiqueta neutral: no asocia el concepto con un término negativo
+ return{code:p.code,letters:p.letters,topic:names.length>1?"Repaso mixto: "+names.join(" · "):names[0],lose,key:words.map((word,i)=>({word,type:types[i]}))};
+}
+function newCode(letters){return letters.slice().sort().join("")+"-"+String(Math.floor(1000+Math.random()*9000))}
+
+/* ===================== CONFIGURACIÓN ===================== */
+let selected=new Set();
+function renderTopics(){
+ const g=$("topicGrid");g.innerHTML="";
+ const add=(L,name,desc,count,cls)=>{const b=document.createElement("button");b.type="button";b.className="topic"+(cls?" "+cls:"")+(selected.has(L)?" sel":"");
+  const c=document.createElement("span");c.className="chk";c.textContent=selected.has(L)?"✓ SELECCIONADO":count;
+  const t=document.createElement("b");t.textContent=name;const d=document.createElement("span");d.className="muted";d.textContent=desc;
+  b.append(c,t,d);b.onclick=()=>{if(L==="Z"&&!custom()){openCustom();return}selected.has(L)?selected.delete(L):selected.add(L);renderTopics()};g.appendChild(b);return b};
+ Object.entries(TOPICS).forEach(([L,t])=>add(L,t.name,t.desc,t.words.length+" conceptos"));
+ const c=custom();
+ const cb=add("Z",c?c.name:"Tema personalizado",c?"Tema propio guardado en este navegador.":"Escribe tu propia lista de conceptos.",c?c.words.length+" conceptos":"+ CREAR","custom");
+ if(c){const e=document.createElement("span");e.className="muted";e.style.textDecoration="underline";e.textContent="Editar lista";e.onclick=ev=>{ev.stopPropagation();openCustom()};cb.appendChild(e)}
+ const n=selected.size;$("selInfo").textContent=n===0?"Ningún tema seleccionado.":n===1?"Partida temática.":"Repaso mixto con "+n+" temas: los 25 conceptos salen de todos los bancos seleccionados.";
+ $("createGame").disabled=n===0;
+}
+function openCustom(){const c=custom();$("customName").value=c?c.name:"";$("customWords").value=c?c.words.join("\n"):"";countCustom();$("customModal").classList.add("show")}
+function customList(){return[...new Map($("customWords").value.split(/\n|,/).map(w=>w.trim().toUpperCase()).filter(w=>w&&w.length<=30).map(w=>[norm(w),w])).values()]}
+function countCustom(){const n=customList().length;$("customCount").textContent=n+" conceptos"+(n<25?" (faltan "+(25-n)+")":" ✓")}
+$("customWords").oninput=countCustom;
+$("customCancel").onclick=()=>$("customModal").classList.remove("show");
+$("customSave").onclick=()=>{const words=customList();if(words.length<25){countCustom();return}const c={name:($("customName").value.trim()||"Tema personalizado").slice(0,40),words};customMem=c;setCustom(c);selected.add("Z");$("customModal").classList.remove("show");renderTopics()};
+
+function show(screen){["setupScreen","captainScreen","gameScreen"].forEach(s=>$(s).classList.toggle("hidden",s!==screen))}
+$("toCaptain").onclick=()=>{show("captainScreen");$("capResult").classList.add("hidden");$("capError").classList.add("hidden");$("capCode").value="";$("capCode").focus()};
+$("capBack").onclick=()=>show("setupScreen");
+$("createGame").onclick=()=>startGame(newCode([...selected]));
+
+/* ===================== MODO CAPITÁN ===================== */
+function fillKey(gridEl,data){gridEl.innerHTML="";data.key.forEach(item=>{const d=document.createElement("div");d.className="keycell k-"+item.type;d.textContent=item.word;const s=document.createElement("small");s.textContent=item.type==="assassin"?"☠ "+data.lose:TYPE_LABEL[item.type];d.appendChild(s);gridEl.appendChild(d)})}
+$("capShow").onclick=()=>{const g=buildGame($("capCode").value);if(g.error){$("capError").textContent=g.error;$("capError").classList.remove("hidden");$("capResult").classList.add("hidden");return}
+ $("capError").classList.add("hidden");$("capInfo").textContent="Tema: "+g.topic+" · Código "+g.code+". Recuerda: tu pista es UNA palabra que no esté en el tablero, más un número.";fillKey($("capGrid"),g);$("capCounts").textContent="Verde: 9 · Azul: 8 · Neutral: 7 · ☠ "+g.lose+": 1";$("capResult").classList.remove("hidden")};
+$("capCode").addEventListener("keydown",e=>{if(e.key==="Enter")$("capShow").click()});
+
+/* ===================== JUEGO ===================== */
+let G=null,revealed=[],turn="green",score={green:0,blue:0},comp={green:0,blue:0},guesses=null,pending=null,seconds=1800,duration=1800,tick=null,finished=false;
+function log(msg){const d=document.createElement("div");d.textContent=msg;$("log").prepend(d)}
+function msg(t){$("message").textContent=t}
+function startGame(code){
+ const g=buildGame(code);if(g.error){alert(g.error);return}
+ G=g;duration=parseInt($("duration").value,10)*60;resetState();
+ $("subtitle").textContent="Biología 1° · "+G.topic;
+ $("headerPills").innerHTML="";["25 conceptos",duration/60+" minutos","2 equipos"].forEach(t=>{const s=document.createElement("span");s.className="pill";s.textContent=t;$("headerPills").appendChild(s)});
+ $("log").innerHTML="";log("Partida "+G.code+" preparada ("+G.topic+"). Verde inicia.");
+ show("gameScreen");render();
+}
+function resetState(){stopTimer();revealed=[];turn="green";score={green:0,blue:0};comp={green:0,blue:0};guesses=null;pending=null;seconds=duration;finished=false;$("clueWord").value="";
+ msg("¡Comienza la exploración! Abre la clave docente y dicta el código a los capitanes. El equipo Verde tiene el primer turno.");showTime()}
+function render(){
+ const board=$("board");board.innerHTML="";
+ G.key.forEach((item,i)=>{const b=document.createElement("button");const r=revealed.includes(i);b.className="word"+(r?" revealed "+item.type:"");
+  const w=document.createElement("span");w.textContent=item.word;b.appendChild(w);
+  if(r){const t=document.createElement("span");t.className="tag";t.textContent=item.type==="assassin"?"☠ "+G.lose:TYPE_LABEL[item.type];b.appendChild(t)}
+  b.disabled=r||finished;b.onclick=()=>choose(i);board.appendChild(b)});
+ $("greenScore").textContent=score.green;$("blueScore").textContent=score.blue;$("greenComp").textContent=comp.green;$("blueComp").textContent=comp.blue;
+ $("turnName").textContent=finished?"Partida terminada":"Turno: Equipo "+teamName(turn);$("turnDot").className="dot "+turn;
+ $("turnHint").textContent=finished?"Revisa el resultado abajo.":"Capitán "+teamName(turn)+": da una pista de una palabra y un número.";
+ $("guessLeft").textContent=guesses===null?"libres":guesses;
+ $("justifyBox").classList.toggle("hidden",!pending);
+ if(pending)$("justifyText").innerHTML="";
+ if(pending){const s=document.createElement("span");s.innerHTML="Justificación del equipo <strong></strong> sobre <strong></strong>: ¿qué relación científica tiene con la pista?";s.querySelectorAll("strong")[0].textContent=teamName(pending.team);s.querySelectorAll("strong")[1].textContent=pending.word;$("justifyText").appendChild(s)}
+ ["clueBtn","endTurn","startTimer"].forEach(id=>$(id).disabled=finished);
+}
+function checkWin(){
+ if(score.green===9){finish("¡Victoria del equipo Verde! Descubrió sus 9 conceptos.");return true}
+ if(score.blue===8){finish("¡Victoria del equipo Azul! Descubrió sus 8 conceptos.");return true}
+ return false}
+function finish(text){finished=true;stopTimer();msg(text+" Resumen: Verde "+score.green+"/9 (★ "+comp.green+") · Azul "+score.blue+"/8 (★ "+comp.blue+").");log(text)}
+function choose(i){
+ if(finished||revealed.includes(i))return;
+ const item=G.key[i];revealed.push(i);const me=teamName(turn);
+ if(item.type==="assassin"){finish("☠ ¡Tarjeta de derrota! El equipo "+me+" eligió "+item.word+". Gana el equipo "+teamName(turn==="green"?"blue":"green")+".")}
+ else if(item.type===turn){
+  score[turn]++;pending={team:turn,word:item.word};log(me+" descubrió "+item.word+".");
+  if(!checkWin()){
+   if(guesses!==null)guesses--;
+   if(guesses===0){msg("Acierto: "+item.word+". Se acabaron los intentos de esta pista; el turno pasa al otro equipo. Primero, que el equipo "+me+" justifique su acierto.");switchTurn()}
+   else msg("Acierto: "+item.word+". Un integrante justifica la relación científica. El equipo puede seguir o terminar su turno.");
+  }
+ }else if(item.type==="neutral"){msg(item.word+" es neutral. Termina el turno del equipo "+me+".");log(me+" eligió "+item.word+" (neutral).");switchTurn()}
+ else{const other=item.type;score[other]++;log(me+" eligió "+item.word+" (del equipo "+teamName(other)+").");
+  if(!checkWin()){msg(item.word+" era del equipo "+teamName(other)+" y cuenta para ellos. Termina el turno del equipo "+me+".");switchTurn()}
+  else msg($("message").textContent+" (El equipo "+me+" le regaló el último concepto.)")}
+ render();
+}
+function switchTurn(){turn=turn==="green"?"blue":"green";guesses=null;$("clueWord").value="";log("Comienza el turno "+teamName(turn)+".")}
+$("justOk").onclick=()=>{if(!pending)return;comp[pending.team]++;log("★ Comprensión para "+teamName(pending.team)+" ("+pending.word+").");pending=null;render()};
+$("justNo").onclick=()=>{if(!pending)return;log("Justificación de "+teamName(pending.team)+" sobre "+pending.word+" sin punto.");pending=null;render()};
+$("clueBtn").onclick=()=>{
+ if(finished)return;const w=$("clueWord").value.trim();if(!w){msg("Escribe la palabra de la pista.");return}
+ if(/\s/.test(w)){msg("La pista debe ser UNA sola palabra.");return}
+ const nw=norm(w);const clash=G.key.find((k,i)=>!revealed.includes(i)&&norm(k.word).split(/\s+/).includes(nw));
+ if(clash){msg("No se vale: «"+w.toUpperCase()+"» aparece en el tablero ("+clash.word+"). El capitán debe dar otra pista.");return}
+ const n=parseInt($("clueNum").value,10);guesses=n+1;log(teamName(turn)+" · pista: "+w.toUpperCase()+" · "+n);msg("Pista del equipo "+teamName(turn)+": "+w.toUpperCase()+" · "+n+". Tienen "+guesses+" intentos.");render()};
+$("clueWord").addEventListener("keydown",e=>{if(e.key==="Enter")$("clueBtn").click()});
+$("endTurn").onclick=()=>{if(finished)return;switchTurn();msg("Turno terminado. Ahora juega el equipo "+teamName(turn)+".");render()};
+
+/* Cronómetro */
+function showTime(){const m=Math.floor(seconds/60),s=seconds%60;$("timer").textContent=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");$("timer").classList.toggle("low",seconds<=300)}
+function stopTimer(){if(tick){clearInterval(tick);tick=null}$("timerState").textContent="Detenido"}
+function startTimer(){if(finished||tick)return;$("timerState").textContent="En marcha";tick=setInterval(()=>{seconds--;showTime();if(seconds<=0){
+ let w=score.green!==score.blue?(score.green>score.blue?"green":"blue"):comp.green!==comp.blue?(comp.green>comp.blue?"green":"blue"):null;
+ finish("Tiempo terminado. "+(w?"Gana el equipo "+teamName(w)+(score.green===score.blue?" por desempate de ★ comprensión.":" por descubrimientos."):"Empate total."));render()}},1000)}
+$("startTimer").onclick=startTimer;$("pauseTimer").onclick=stopTimer;
+
+/* Barra de herramientas */
+$("keyBtn").onclick=()=>{$("keyCode").textContent=G.code;$("keyInfo").textContent="Tema: "+G.topic+".";fillKey($("keyGrid"),G);$("keyCounts").textContent="Verde: 9 · Azul: 8 · Neutral: 7 · ☠ "+G.lose+": 1";$("keyModal").classList.add("show")};
+$("closeKey").onclick=()=>$("keyModal").classList.remove("show");
+$("rulesBtn").onclick=$("rulesBtn2").onclick=()=>$("rulesModal").classList.add("show");$("printRules").onclick=()=>window.print();
+/* Enlace directo para capitanes: ?capitan=C-4607 */
+(()=>{try{const c=new URLSearchParams(location.search).get("capitan");if(c){show("captainScreen");$("capCode").value=c;$("capShow").click()}}catch(e){}})();$("closeRules").onclick=()=>$("rulesModal").classList.remove("show");
+$("resetBtn").onclick=()=>{if(confirm("¿Reiniciar esta partida con la misma clave?")){resetState();$("log").innerHTML="";log("Partida "+G.code+" reiniciada con la misma clave.");render()}};
+$("newSame").onclick=()=>{if(confirm("¿Crear un tablero nuevo con el mismo tema? Los capitanes necesitarán el nuevo código."))startGame(newCode(G.letters))};
+$("toSetup").onclick=()=>{if(confirm("¿Salir al menú de temas? Se perderá la partida actual.")){stopTimer();$("subtitle").textContent="Biología 1° · Secundaria · Trimestre 1";show("setupScreen")}};
+document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.remove("show")}));
+
+renderTopics();
+</script>
+</body></html>
